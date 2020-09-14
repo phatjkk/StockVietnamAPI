@@ -4,10 +4,11 @@ require('simple_html_dom.php');
 define('FINANCIAL_MAX_ITERATIONS', 128);
 define('FINANCIAL_PRECISION', 1.0e-08);
 if(isset($_GET["macp"])){
+$year = date("Y");
 $macp=$_GET["macp"];
 $rowData1=html_to_array("http://finance.tvsi.com.vn/Enterprises/ChiTieuQuanTrong?symbol=".$macp."&period=0&currentPage=1&donvi=1000");
-$rowData2=html_to_array("http://finance.tvsi.com.vn/Enterprises/BangCanDoiKeToan?symbol=".$macp."&YearView=2019&period=2&donvi=1000");
-$rowData3 = html_to_array("http://finance.tvsi.com.vn/Enterprises/BaoCaoKetQuaKd?symbol=".$macp."&YearView=2019&period=2&donvi=1000");
+$rowData2=html_to_array("http://finance.tvsi.com.vn/Enterprises/BangCanDoiKeToan?symbol=".$macp."&YearView=".$year."&period=2&donvi=1000");
+$rowData3 = html_to_array("http://finance.tvsi.com.vn/Enterprises/BaoCaoKetQuaKd?symbol=".$macp."&YearView=".$year."&period=2&donvi=1000");
 $rowData4 = html_to_array("https://finance.tvsi.com.vn/Enterprises/LuuChuyenTienTegiantiep?symbol=".$macp."&YearView=2019&period=1&donvi=1000");
 $rowData5 = html_to_array("https://finance.tvsi.com.vn/Enterprises/OverView?symbol=".$macp,1);
 echo "Tên doanh nghiệp: ".LayTenCty($macp)."</br>";
