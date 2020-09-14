@@ -6,20 +6,28 @@ define('FINANCIAL_PRECISION', 1.0e-08);
 if(isset($_GET["macp"])){
 $year = date("Y");
 $macp=$_GET["macp"];
-$rowData1=html_to_array("http://finance.tvsi.com.vn/Enterprises/ChiTieuQuanTrong?symbol=".$macp."&period=0&currentPage=1&donvi=1000");
-$rowData2=html_to_array("http://finance.tvsi.com.vn/Enterprises/BangCanDoiKeToan?symbol=".$macp."&YearView=".$year."&period=2&donvi=1000");
-$rowData3 = html_to_array("http://finance.tvsi.com.vn/Enterprises/BaoCaoKetQuaKd?symbol=".$macp."&YearView=".$year."&period=2&donvi=1000");
-$rowData4 = html_to_array("https://finance.tvsi.com.vn/Enterprises/LuuChuyenTienTegiantiep?symbol=".$macp."&YearView=2019&period=1&donvi=1000");
+$rowData1=html_to_array("http://finance.tvsi.com.vn/Enterprises/ChiTieuQuanTrong?symbol=".$macp."&period=0&currentPage=1&donvi=1");
+$rowData2=html_to_array("http://finance.tvsi.com.vn/Enterprises/BangCanDoiKeToan?symbol=".$macp."&YearView=".$year."&period=2&donvi=1");
+$rowData3 = html_to_array("http://finance.tvsi.com.vn/Enterprises/BaoCaoKetQuaKd?symbol=".$macp."&YearView=".$year."&period=2&donvi=1");
+$rowData4 = html_to_array("https://finance.tvsi.com.vn/Enterprises/LuuChuyenTienTegiantiep?symbol=".$macp."&YearView=".$year."&period=2&donvi=1");
+$nowEPS=$rowData1[9][6];
+$nowNodaihan=$rowData2[68][6];
+$nowThunhapsauthue=$rowData3[20][6];
+$nowVonchu=$rowData2[76][6];
+
 $rowData5 = html_to_array("https://finance.tvsi.com.vn/Enterprises/OverView?symbol=".$macp,1);
+
 echo "Tên doanh nghiệp: ".LayTenCty($macp)."</br>";
 echo "Mã cỗ phiếu: ".strtoupper($macp)."</br>";
 echo "Sl cỗ phiếu đang lưu hành :".$rowData5[0][3]." (cỗ phiếu)</br>";
-echo "Giá hiện tại: ".LayGiaCophieu($macp)." (nghìn đồng)</br>";
-//echo "EPS HIỆN TẠI :".$rowData1[9][6]." (nghìn đồng)</br>";
-//echo "NỢ DÀI HẠN :".$rowData2[68][6]." (nghìn đồng)</br>";
-//echo "Vốn chủ kì gần nhất :".$rowData1[2][6]." (nghìn đồng)</br>";
+echo "Giá hiện tại: ".LayGiaCophieu($macp)." (đồng)</br>";
+echo "EPS HIỆN TẠI :".$nowEPS." (đồng)</br>";
+echo "NỢ DÀI HẠN :".$nowNodaihan." (đồng)</br>";
+echo "Thu nhập sau thuế :".$nowThunhapsauthue." (đồng)</br>";
+echo "Vốn chủ kì gần nhất :".$nowVonchu." (đồng)</br>";
 echo "Tỉ lệ tăng trưởng dòng tiền(3 năm) :".round(RATE(2,0,-_int($rowData4[19][4]),_int($rowData4[19][6]))*100, 2, PHP_ROUND_HALF_UP)."%</br>";
-echo "ROIC :".round(ROIC(_int($rowData3[20][6]),_int($rowData1[2][6]),_int($rowData2[68][6])), 2, PHP_ROUND_HALF_UP)."% (>10%)</br>";
+echo "ROIC :".round(ROIC(_int($nowThunhapsauthue),_int($nowVonchu),_int($nowNodaihan)), 2, PHP_ROUND_HALF_UP)."% (>10%)</br>";
+
 echo "#TỔNG QUAN: </br>";
 echo_table_array($rowData5);
 echo "#CÁC CHỈ TIÊU QUANG TRONG(5 quý gần nhất): </br>";
@@ -71,7 +79,7 @@ function LayGiaCophieu($macp){
 return json_decode(file_get_html("http://e.cafef.vn/info.ashx?type=cp&symbol=".$macp),true)["Price"];
 }
 function ROIC($LN,$VC,$NDH){
-	return $LN/($VC+$NDH);
+	return $LN/($VC+$NDH)*100;
 }
 function _int($string){
 	return strval(str_replace(',','',$string)); 
