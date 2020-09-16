@@ -6,14 +6,16 @@ define('FINANCIAL_PRECISION', 1.0e-08);
 if(isset($_GET["macp"])){
 $year = date("Y");
 $macp=$_GET["macp"];
+
 $rowData1=html_to_array("http://finance.tvsi.com.vn/Enterprises/ChiTieuQuanTrong?symbol=".$macp."&period=0&currentPage=1&donvi=1");
 $rowData2=html_to_array("http://finance.tvsi.com.vn/Enterprises/BangCanDoiKeToan?symbol=".$macp."&YearView=".$year."&period=2&donvi=1");
 $rowData3 = html_to_array("http://finance.tvsi.com.vn/Enterprises/BaoCaoKetQuaKd?symbol=".$macp."&YearView=".$year."&period=2&donvi=1");
 $rowData4 = html_to_array("https://finance.tvsi.com.vn/Enterprises/LuuChuyenTienTegiantiep?symbol=".$macp."&YearView=".$year."&period=2&donvi=1");
-$nowEPS=$rowData1[9][6];
-$nowNodaihan=$rowData2[68][6];
-$nowThunhapsauthue=$rowData3[20][6];
-$nowVonchu=$rowData2[76][6];
+
+$nowEPS=$rowData1[search_arr("EPS",$rowData1)][6];
+$nowNodaihan=$rowData2[search_arr("Nợ dài hạn",$rowData2)][6];
+$nowThunhapsauthue=$rowData3[search_arr("Lãi/(lỗ) thuần sau thuế",$rowData3)][6];
+$nowVonchu=$rowData2[search_arr("Vốn chủ sở hữu",$rowData2)][6];
 
 $rowData5 = html_to_array("https://finance.tvsi.com.vn/Enterprises/OverView?symbol=".$macp,1);
 
@@ -36,8 +38,16 @@ echo "#BẢNG CÂN ĐỐI KẾ TOÁN(5 quý gần nhất): </br>";
 echo_table_array($rowData2);
 echo "#BÁO CÁO KẾT QUẢ KINH DOANH: </br>";
 echo_table_array($rowData3);
-echo "#lƯU CHUYỂN TIỀN TỆ GIÁN TIẾP: </br>";
+echo "#LƯU CHUYỂN TIỀN TỆ GIÁN TIẾP: </br>";
 echo_table_array($rowData4);
+}
+function search_arr($find_string, $array) {
+   for ($i=0; $i < sizeof($array) ; $i++) {
+       if (strpos($array[$i][0], $find_string)!== false) {
+           return $i;
+       }
+   }
+   return null;
 }
 function RATE($nper, $pmt, $pv, $fv = 0.0, $type = 0, $guess = 0.1) {
 
