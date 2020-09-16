@@ -17,29 +17,52 @@ $nowNodaihan=$rowData2[search_arr("Nợ dài hạn",$rowData2)][6];
 $nowThunhapsauthue=$rowData3[search_arr("Lãi/(lỗ) thuần sau thuế",$rowData3)][6];
 $nowVonchu=$rowData2[search_arr("Vốn chủ sở hữu",$rowData2)][6];
 
-$rowData5 = html_to_array("https://finance.tvsi.com.vn/Enterprises/OverView?symbol=".$macp,1);
 
-echo "Tên doanh nghiệp: ".LayTenCty($macp)."</br>";
-echo "Mã cỗ phiếu: ".strtoupper($macp)."</br>";
-echo "Sl cỗ phiếu đang lưu hành :".$rowData5[0][3]." (cỗ phiếu)</br>";
-echo "Giá hiện tại: ".LayGiaCophieu($macp)." (đồng)</br>";
-echo "EPS HIỆN TẠI :".$nowEPS." (đồng)</br>";
-echo "NỢ DÀI HẠN :".$nowNodaihan." (đồng)</br>";
-echo "Thu nhập sau thuế :".$nowThunhapsauthue." (đồng)</br>";
-echo "Vốn chủ kì gần nhất :".$nowVonchu." (đồng)</br>";
-echo "Tỉ lệ tăng trưởng dòng tiền(3 năm) :".round(RATE(2,0,-_int($rowData4[19][4]),_int($rowData4[19][6]))*100, 2, PHP_ROUND_HALF_UP)."%</br>";
-echo "ROIC :".round(ROIC(_int($nowThunhapsauthue),_int($nowVonchu),_int($nowNodaihan)), 2, PHP_ROUND_HALF_UP)."% (>10%)</br>";
+$array = array();
 
-echo "#TỔNG QUAN: </br>";
-echo_table_array($rowData5);
-echo "#CÁC CHỈ TIÊU QUANG TRONG(5 quý gần nhất): </br>";
-echo_table_array($rowData1);
-echo "#BẢNG CÂN ĐỐI KẾ TOÁN(5 quý gần nhất): </br>";
-echo_table_array($rowData2);
-echo "#BÁO CÁO KẾT QUẢ KINH DOANH: </br>";
-echo_table_array($rowData3);
-echo "#LƯU CHUYỂN TIỀN TỆ GIÁN TIẾP: </br>";
-echo_table_array($rowData4);
+$array['Name'] = LayTenCty($macp);
+$array['Code'] = $macp;
+$array['Price'] = LayGiaCophieu($macp);
+//$array['Amount'] = $rowData5[0][3];
+
+$array['ROIC_calc'] = array
+(
+  'EPS' => $nowEPS,
+  'No_dai_han' => $nowNodaihan,
+  'Thu_nhap_sau_thue' => $nowThunhapsauthue,
+  'ROIC' => (round(ROIC(_int($nowThunhapsauthue),_int($nowVonchu),_int($nowNodaihan)), 2, PHP_ROUND_HALF_UP)."%")
+);
+
+
+$array['ChiTieuQuanTrong'] = $rowData1;
+$array['BangCanDoiKeToan'] = $rowData2;
+$array['BaoCaoKetQuaKd'] = $rowData3;
+$array['LuuChuyenTienTegiantiep'] = $rowData4;
+$json = json_encode($array, JSON_PRETTY_PRINT);
+
+
+echo $json;
+//echo "Tên doanh nghiệp: ".LayTenCty($macp)."</br>";
+//echo "Mã cỗ phiếu: ".strtoupper($macp)."</br>";
+//echo "Sl cỗ phiếu đang lưu hành :".$rowData5[0][3]." (cỗ phiếu)</br>";
+//echo "Giá hiện tại: ".LayGiaCophieu($macp)." (đồng)</br>";
+//echo "EPS HIỆN TẠI :".$nowEPS." (đồng)</br>";
+//echo "NỢ DÀI HẠN :".$nowNodaihan." (đồng)</br>";
+//echo "Thu nhập sau thuế :".$nowThunhapsauthue." (đồng)</br>";
+//echo "Vốn chủ kì gần nhất :".$nowVonchu." (đồng)</br>";
+//echo "Tỉ lệ tăng trưởng dòng tiền(3 năm) :".round(RATE(2,0,-_int($rowData4[19][4]),_int($rowData4[19][6]))*100, 2, PHP_ROUND_HALF_UP)."%</br>";
+//echo "ROIC :".round(ROIC(_int($nowThunhapsauthue),_int($nowVonchu),_int($nowNodaihan)), 2, PHP_ROUND_HALF_UP)."% </br>";
+
+//echo "#TỔNG QUAN: </br>";
+//echo_table_array($rowData5);
+//echo "#CÁC CHỈ TIÊU QUANG TRONG(5 quý gần nhất): </br>";
+//echo_table_array($rowData1);
+//echo "#BẢNG CÂN ĐỐI KẾ TOÁN(5 quý gần nhất): </br>";
+//echo_table_array($rowData2);
+//echo "#BÁO CÁO KẾT QUẢ KINH DOANH: </br>";
+//echo_table_array($rowData3);
+//echo "#LƯU CHUYỂN TIỀN TỆ GIÁN TIẾP: </br>";
+//echo_table_array($rowData4);
 }
 function search_arr($find_string, $array) {
    for ($i=0; $i < sizeof($array) ; $i++) {
